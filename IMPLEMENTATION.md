@@ -349,7 +349,7 @@ await server.register(cors, {
 await server.register(websocket);
 
 await server.register(jwt, {
-  secret: process.env.JWT_SECRET || 'your-secret-key',
+  secret: process.env.JWT_SECRET || 'dev-only-secret-not-for-production',
 });
 
 // Register routes

@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import { syncWebSocket } from './services/sync.js';
 
-export const JWT_SECRET='***';
+export const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-not-for-production';
 
 // In-memory stores
 const users = new Map<string, any>();
@@ -16,7 +16,6 @@ const devices = new Map<string, any[]>();
 // Auth middleware
 function requireAuth(request: any, reply: any, done: any) {
   const auth = request.headers.authorization;
-  console.log('AUTH HEADER:', auth ? auth.substring(0, 30) + '...' : 'null');
   if (!auth || !auth.startsWith('Bearer ')) {
     reply.status(401).send({ success: false, error: 'Unauthorized - No token' });
     return;
@@ -26,7 +25,6 @@ function requireAuth(request: any, reply: any, done: any) {
     request.user = decoded;
     done();
   } catch (err: any) {
-    console.log('JWT ERROR:', err.message);
     reply.status(401).send({ success: false, error: 'Unauthorized - Invalid token' });
   }
 }
