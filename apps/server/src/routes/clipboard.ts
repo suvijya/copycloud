@@ -6,23 +6,15 @@ const clipboardItems = new Map<string, any[]>();
 
 export async function clipboardRoutes(fastify: FastifyInstance) {
   // Get all clipboard items for user
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const items = clipboardItems.get(userId) || [];
     return { success: true, data: items };
   });
   
   // Add new clipboard item
-  fastify.post('/', async (request, reply) => {
+  fastify.post('/', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { content_type, encrypted_content, metadata, device_id } = request.body as any;
     
     const item = {
@@ -41,44 +33,27 @@ export async function clipboardRoutes(fastify: FastifyInstance) {
     const items = clipboardItems.get(userId) || [];
     items.unshift(item);
     
-    // Keep only last 100 items
     if (items.length > 100) {
       items.pop();
     }
     
     clipboardItems.set(userId, items);
-    
-    // Broadcast to other devices via WebSocket
-    broadcastToUser(userId, {
-      type: 'clipboard_update',
-      payload: item,
-    });
-    
     return { success: true, data: item };
   });
   
   // Delete clipboard item
-  fastify.delete('/:id', async (request, reply) => {
+  fastify.delete('/:id', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { id } = request.params as any;
     const items = clipboardItems.get(userId) || [];
     const filtered = items.filter(item => item.id !== id);
     clipboardItems.set(userId, filtered);
-    
     return { success: true };
   });
   
   // Pin/unpin item
-  fastify.patch('/:id/pin', async (request, reply) => {
+  fastify.patch('/:id/pin', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { id } = request.params as any;
     const items = clipboardItems.get(userId) || [];
     const item = items.find(item => item.id === id);
@@ -89,10 +64,4 @@ export async function clipboardRoutes(fastify: FastifyInstance) {
     
     return { success: true, data: item };
   });
-}
-
-// WebSocket broadcast helper
-function broadcastToUser(userId: string, message: any) {
-  // This will be implemented with WebSocket connections
-  console.log(`Broadcasting to user ${userId}:`, message);
 }

@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { hash, compare } from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import * as jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../index.js';
 
 // In-memory store (replace with database in production)
 const users = new Map<string, any>();
@@ -11,7 +13,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     const { email, password } = request.body as any;
     
     if (users.has(email)) {
-      return reply.status(400).send({ error: 'User already exists' });
+      return reply.status(400).send({ success: false, error: 'User already exists' });
     }
     
     const passwordHash = await hash(password, 10);
@@ -25,7 +27,7 @@ export async function authRoutes(fastify: FastifyInstance) {
     
     users.set(email, user);
     
-    const token = fastify.jwt.sign({ id: user.id, email });
+    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
     
     return { success: true, token, user: { id: user.id, email } };
   });
@@ -36,15 +38,15 @@ export async function authRoutes(fastify: FastifyInstance) {
     
     const user = users.get(email);
     if (!user) {
-      return reply.status(401).send({ error: 'Invalid credentials' });
+      return reply.status(401).send({ success: false, error: 'Invalid credentials' });
     }
     
     const valid = await compare(password, user.password_hash);
     if (!valid) {
-      return reply.status(401).send({ error: 'Invalid credentials' });
+      return reply.status(401).send({ success: false, error: 'Invalid credentials' });
     }
     
-    const token = fastify.jwt.sign({ id: user.id, email });
+    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
     
     return { success: true, token, user: { id: user.id, email } };
   });

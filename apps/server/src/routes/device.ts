@@ -6,23 +6,15 @@ const devices = new Map<string, any[]>();
 
 export async function deviceRoutes(fastify: FastifyInstance) {
   // Get all devices for user
-  fastify.get('/', async (request, reply) => {
+  fastify.get('/', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const userDevices = devices.get(userId) || [];
     return { success: true, data: userDevices };
   });
   
   // Register new device
-  fastify.post('/register', async (request, reply) => {
+  fastify.post('/register', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { name, platform, push_token } = request.body as any;
     
     const device = {
@@ -43,12 +35,8 @@ export async function deviceRoutes(fastify: FastifyInstance) {
   });
   
   // Update device status
-  fastify.patch('/:id/status', async (request, reply) => {
+  fastify.patch('/:id/status', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { id } = request.params as any;
     const { is_online } = request.body as any;
     
@@ -64,17 +52,12 @@ export async function deviceRoutes(fastify: FastifyInstance) {
   });
   
   // Delete device
-  fastify.delete('/:id', async (request, reply) => {
+  fastify.delete('/:id', { preHandler: (fastify as any).authenticate }, async (request, reply) => {
     const userId = (request as any).user?.id;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
-    
     const { id } = request.params as any;
     const userDevices = devices.get(userId) || [];
     const filtered = userDevices.filter(d => d.id !== id);
     devices.set(userId, filtered);
-    
     return { success: true };
   });
 }
