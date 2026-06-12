@@ -3,8 +3,6 @@ name: CI/CD
 on:
   push:
     branches: [master, main]
-  pull_request:
-    branches: [master, main]
 
 jobs:
   build:
@@ -24,10 +22,10 @@ jobs:
           version: 9
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --filter @copycloud/shared --filter @copycloud/server
 
       - name: Build shared package
-        run: pnpm --filter @copycloud/shared build
+        run: cd packages/shared && pnpm build
 
       - name: Build server
-        run: pnpm --filter @copycloud/server build
+        run: cd apps/server && pnpm build
