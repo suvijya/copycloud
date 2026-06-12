@@ -1,0 +1,43 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build shared package
+        run: pnpm --filter @copycloud/shared build
+
+      - name: Build server
+        run: pnpm --filter @copycloud/server build
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Lint
+        run: pnpm lint

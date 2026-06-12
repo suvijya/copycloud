@@ -1,19 +1,17 @@
 {
   "name": "copycloud",
   "version": "0.1.0",
-  "description": "Cross-device clipboard synchronization",
-  "main": "src/main.js",
+  "private": true,
   "scripts": {
-    "start": "electron .",
-    "dev": "electron . --dev"
+    "dev:desktop": "pnpm --filter @copycloud/desktop dev",
+    "dev:mobile": "pnpm --filter @copycloud/mobile start",
+    "dev:server": "pnpm --filter @copycloud/server dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
   },
-  "keywords": ["clipboard", "sync", "cross-device"],
-  "author": "Suvijya Arya",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^35.0.0"
+  "engines": {
+    "node": ">=20.0.0"
   },
-  "dependencies": {
-    "electron-store": "^8.2.0"
-  }
+  "packageManager": "pnpm@9.0.0"
 }
