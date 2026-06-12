@@ -1,0 +1,19 @@
+{
+  "name": "copycloud",
+  "version": "0.1.0",
+  "description": "Cross-device clipboard synchronization",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": ["clipboard", "sync", "cross-device"],
+  "author": "Suvijya Arya",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^35.0.0"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  }
+}
