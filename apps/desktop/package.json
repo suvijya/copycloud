@@ -10,7 +10,7 @@
   "dependencies": {
     "electron-store": "^8.2.0",
     "socket.io-client": "^4.7.0",
-    "@copycloud/shared": "workspace:*"
+    "@copycloud/shared": "*"
   },
   "devDependencies": {
     "electron": "^29.0.0",

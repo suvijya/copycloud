@@ -7,7 +7,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@copycloud/shared": "workspace:*",
+    "@copycloud/shared": "*",
     "@fastify/cors": "^9.0.0",
     "@fastify/jwt": "^8.0.0",
     "@fastify/websocket": "^10.0.0",
