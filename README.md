@@ -42,7 +42,7 @@ Cross-device clipboard synchronization tool for seamless copy-paste across all y
 git clone https://github.com/suvijya/copycloud.git
 cd copycloud
 
-# Install dependencies
+# Install all dependencies (monorepo)
 pnpm install
 
 # Build shared package
