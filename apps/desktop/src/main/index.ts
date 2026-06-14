@@ -1,14 +1,60 @@
 import { app, BrowserWindow, Tray, Menu, clipboard, nativeImage, globalShortcut } from 'electron';
-import path from 'path';
+import * as path from 'path';
 import Store from 'electron-store';
 import { io } from 'socket.io-client';
 import { encrypt, decrypt } from '@copycloud/shared';
+import * as net from 'net';
 
 const store = new Store();
 let mainWindow: BrowserWindow | null = null;
 let tray: Tray | null = null;
 let socket: any = null;
 let lastClipboardContent = '';
+
+// Check if a port is available
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const server = net.createServer();
+    server.once('error', () => resolve(false));
+    server.once('listening', () => {
+      server.close(() => resolve(true));
+    });
+    server.listen(port, '127.0.0.1');
+  });
+}
+
+// Find available port starting from base port
+async function findAvailablePort(basePort: number = 3000, maxAttempts: number = 10): Promise<number> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const port = basePort + i;
+    if (await isPortAvailable(port)) {
+      return port;
+    }
+    console.log(`Port ${port} in use, trying ${port + 1}...`);
+  }
+  // If all ports are busy, return the base port (will fail gracefully)
+  console.warn('All ports in use, falling back to base port');
+  return basePort;
+}
+
+// Get server URL with auto-detection
+async function getServerUrl(): Promise<string> {
+  // Check if user has configured a custom server URL
+  const customUrl = store.get('server_url') as string;
+  if (customUrl) {
+    return customUrl;
+  }
+
+  // Auto-detect available port
+  const port = await findAvailablePort(3000);
+  const detectedUrl = `http://localhost:${port}`;
+  
+  // Save detected URL for future use
+  store.set('server_url', detectedUrl);
+  console.log(`Using server at ${detectedUrl}`);
+  
+  return detectedUrl;
+}
 
 // Create tray icon
 function createTray() {
@@ -98,8 +144,8 @@ function startClipboardMonitor() {
 }
 
 // Connect to WebSocket server
-function connectToServer() {
-  const serverUrl = store.get('server_url') as string || 'http://localhost:3000';
+async function connectToServer() {
+  const serverUrl = await getServerUrl();
   
   socket = io(serverUrl, {
     auth: {
@@ -122,6 +168,18 @@ function connectToServer() {
   
   socket.on('disconnect', () => {
     console.log('Disconnected from server');
+  });
+
+  socket.on('connect_error', (err: Error) => {
+    console.error('Connection error:', err.message);
+    // Try next port after 2 seconds
+    setTimeout(async () => {
+      const currentUrl = store.get('server_url') as string;
+      const currentPort = parseInt(currentUrl.split(':').pop() || '3000');
+      const nextPort = await findAvailablePort(currentPort + 1, 1);
+      store.set('server_url', `http://localhost:${nextPort}`);
+      connectToServer();
+    }, 2000);
   });
 }
 
