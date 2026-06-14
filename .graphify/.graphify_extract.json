@@ -1,0 +1,1021 @@
+{
+  "nodes": [
+    {
+      "id": "main_index",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "main_index_store",
+      "label": "store",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "main_index_createtray",
+      "label": "createTray()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "main_index_createwindow",
+      "label": "createWindow()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "main_index_showhistory",
+      "label": "showHistory()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L52"
+    },
+    {
+      "id": "main_index_showsettings",
+      "label": "showSettings()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L60"
+    },
+    {
+      "id": "main_index_startclipboardmonitor",
+      "label": "startClipboardMonitor()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L66"
+    },
+    {
+      "id": "main_index_connecttoserver",
+      "label": "connectToServer()",
+      "file_type": "code",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L91"
+    },
+    {
+      "id": "mobile_app",
+      "label": "App.tsx",
+      "file_type": "code",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "mobile_app_clipitem",
+      "label": "ClipItem",
+      "file_type": "code",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "mobile_app_app",
+      "label": "App()",
+      "file_type": "code",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L12"
+    },
+    {
+      "id": "mobile_app_timeago",
+      "label": "timeAgo()",
+      "file_type": "code",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L78"
+    },
+    {
+      "id": "mobile_app_styles",
+      "label": "styles",
+      "file_type": "code",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L86"
+    },
+    {
+      "id": "src_index",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_index_users",
+      "label": "users",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_index_clipboarditems",
+      "label": "clipboardItems",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_index_devices",
+      "label": "devices",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_index_requireauth",
+      "label": "requireAuth()",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "src_index_server",
+      "label": "server",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L32"
+    },
+    {
+      "id": "src_index_start",
+      "label": "start()",
+      "file_type": "code",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L34"
+    },
+    {
+      "id": "routes_auth",
+      "label": "auth.ts",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "routes_auth_users",
+      "label": "users",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "routes_auth_authroutes",
+      "label": "authRoutes()",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "routes_clipboard",
+      "label": "clipboard.ts",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "routes_clipboard_clipboarditems",
+      "label": "clipboardItems",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "routes_clipboard_clipboardroutes",
+      "label": "clipboardRoutes()",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "routes_device",
+      "label": "device.ts",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "routes_device_devices",
+      "label": "devices",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "routes_device_deviceroutes",
+      "label": "deviceRoutes()",
+      "file_type": "code",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "services_sync",
+      "label": "sync.ts",
+      "file_type": "code",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "services_sync_connections",
+      "label": "connections",
+      "file_type": "code",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "services_sync_syncwebsocket",
+      "label": "syncWebSocket()",
+      "file_type": "code",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "services_sync_broadcasttouser",
+      "label": "broadcastToUser()",
+      "file_type": "code",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L60"
+    },
+    {
+      "id": "src_clipboard",
+      "label": "clipboard.ts",
+      "file_type": "code",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_clipboard_detectcontenttype",
+      "label": "detectContentType()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "src_clipboard_categorizecontent",
+      "label": "categorizeContent()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "src_encryption",
+      "label": "encryption.ts",
+      "file_type": "code",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_encryption_derivekey",
+      "label": "deriveKey()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "src_encryption_encrypt",
+      "label": "encrypt()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_encryption_decrypt",
+      "label": "decrypt()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "src_encryption_generateencryptionkey",
+      "label": "generateEncryptionKey()",
+      "file_type": "code",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L50"
+    },
+    {
+      "id": "src_index",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "packages/shared/src/index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_types",
+      "label": "types.ts",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_types_user",
+      "label": "User",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_types_device",
+      "label": "Device",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_types_clipboardcontenttype",
+      "label": "ClipboardContentType",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_types_clipboarditem",
+      "label": "ClipboardItem",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "src_types_syncevent",
+      "label": "SyncEvent",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L37"
+    },
+    {
+      "id": "src_types_apiresponse",
+      "label": "ApiResponse",
+      "file_type": "code",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L43"
+    }
+  ],
+  "edges": [
+    {
+      "source": "main_index",
+      "target": "electron",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "path",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "electron_store",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "socket_io_client",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "shared",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_store",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_createtray",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L14",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_createwindow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L30",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_showhistory",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L52",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_showsettings",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L60",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_startclipboardmonitor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L66",
+      "weight": 1
+    },
+    {
+      "source": "main_index",
+      "target": "main_index_connecttoserver",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/desktop/src/main/index.ts",
+      "source_location": "L91",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "react",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "react_native",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "expo_status_bar",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "mobile_app_clipitem",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "mobile_app_app",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L12",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "mobile_app_timeago",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L78",
+      "weight": 1
+    },
+    {
+      "source": "mobile_app",
+      "target": "mobile_app_styles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/mobile/App.tsx",
+      "source_location": "L86",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "fastify",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "cors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "websocket",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "jsonwebtoken",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "bcrypt",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "uuid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "services_sync",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "services_sync_syncwebsocket",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_users",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L12",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_clipboarditems",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L13",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_devices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L14",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_requireauth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L17",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_server",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L32",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_index_start",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/index.ts",
+      "source_location": "L34",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "fastify",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "bcrypt",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "uuid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L3",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "jsonwebtoken",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "src_index",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "src_index_jwt_secret",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "routes_auth_users",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "routes_auth",
+      "target": "routes_auth_authroutes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/auth.ts",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "routes_clipboard",
+      "target": "fastify",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "routes_clipboard",
+      "target": "uuid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "routes_clipboard",
+      "target": "routes_clipboard_clipboarditems",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "routes_clipboard",
+      "target": "routes_clipboard_clipboardroutes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/clipboard.ts",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "routes_device",
+      "target": "fastify",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "routes_device",
+      "target": "uuid",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L2",
+      "weight": 1
+    },
+    {
+      "source": "routes_device",
+      "target": "routes_device_devices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L5",
+      "weight": 1
+    },
+    {
+      "source": "routes_device",
+      "target": "routes_device_deviceroutes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/routes/device.ts",
+      "source_location": "L7",
+      "weight": 1
+    },
+    {
+      "source": "services_sync",
+      "target": "ws",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "services_sync",
+      "target": "services_sync_connections",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L4",
+      "weight": 1
+    },
+    {
+      "source": "services_sync",
+      "target": "services_sync_syncwebsocket",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L6",
+      "weight": 1
+    },
+    {
+      "source": "services_sync",
+      "target": "services_sync_broadcasttouser",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/server/src/services/sync.ts",
+      "source_location": "L60",
+      "weight": 1
+    },
+    {
+      "source": "src_clipboard",
+      "target": "src_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_clipboard",
+      "target": "src_types_clipboarditem",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_clipboard",
+      "target": "src_types_clipboardcontenttype",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_clipboard",
+      "target": "src_clipboard_detectcontenttype",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "src_clipboard",
+      "target": "src_clipboard_categorizecontent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/clipboard.ts",
+      "source_location": "L30",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption",
+      "target": "crypto",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption",
+      "target": "src_encryption_derivekey",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L10",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption",
+      "target": "src_encryption_encrypt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L19",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption",
+      "target": "src_encryption_decrypt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L33",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption",
+      "target": "src_encryption_generateencryptionkey",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L50",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption_encrypt",
+      "target": "src_encryption_derivekey",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L22",
+      "weight": 1
+    },
+    {
+      "source": "src_encryption_decrypt",
+      "target": "src_encryption_derivekey",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/encryption.ts",
+      "source_location": "L41",
+      "weight": 1
+    },
+    {
+      "source": "src_index",
+      "target": "src_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/index.ts",
+      "source_location": "L1",
+      "weight": 1,
+      "context": "re-export"
+    },
+    {
+      "source": "src_index",
+      "target": "src_encryption",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/index.ts",
+      "source_location": "L2",
+      "weight": 1,
+      "context": "re-export"
+    },
+    {
+      "source": "src_index",
+      "target": "src_clipboard",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/index.ts",
+      "source_location": "L3",
+      "weight": 1,
+      "context": "re-export"
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_user",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L1",
+      "weight": 1
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_device",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L8",
+      "weight": 1
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_clipboardcontenttype",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L18",
+      "weight": 1
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_clipboarditem",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L20",
+      "weight": 1
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_syncevent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L37",
+      "weight": 1
+    },
+    {
+      "source": "src_types",
+      "target": "src_types_apiresponse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "packages/shared/src/types.ts",
+      "source_location": "L43",
+      "weight": 1
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -16,5 +16,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@sentropic/graphify": "^0.14.0"
   }
 }
