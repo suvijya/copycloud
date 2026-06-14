@@ -12,18 +12,24 @@ let lastClipboardContent = '';
 
 // Create tray icon
 function createTray() {
-  tray = new Tray(path.join(__dirname, '../assets/icon.png'));
-  
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show History', click: showHistory },
-    { label: 'Settings', click: showSettings },
-    { type: 'separator' },
-    { label: 'Quit', click: () => app.quit() },
-  ]);
-  
-  tray.setToolTip('CopyCloud');
-  tray.setContextMenu(contextMenu);
-  tray.on('click', showHistory);
+  try {
+    const iconPath = path.join(__dirname, '../assets/icon.png');
+    const icon = nativeImage.createFromPath(iconPath);
+    tray = new Tray(icon.isEmpty() ? nativeImage.createEmpty() : icon);
+
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Show History', click: showHistory },
+      { label: 'Settings', click: showSettings },
+      { type: 'separator' },
+      { label: 'Quit', click: () => app.quit() },
+    ]);
+
+    tray.setToolTip('CopyCloud');
+    tray.setContextMenu(contextMenu);
+    tray.on('click', showHistory);
+  } catch (err) {
+    console.error('Failed to create tray icon:', err);
+  }
 }
 
 // Create main window
@@ -31,7 +37,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
     height: 600,
-    show: false,
+    show: true,
     frame: false,
     resizable: false,
     webPreferences: {
@@ -39,9 +45,13 @@ function createWindow() {
       contextIsolation: false,
     },
   });
-  
-  mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
-  
+
+  if (process.env['ELECTRON_RENDERER_URL']) {
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL']);
+  } else {
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+  }
+
   mainWindow.on('close', (event) => {
     event.preventDefault();
     mainWindow?.hide();
