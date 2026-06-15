@@ -4,167 +4,445 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CopyCloud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --background: hsl(0, 0%, 3%);
+      --foreground: hsl(0, 0%, 98%);
+      --accent-orange: hsl(18, 90%, 55%);
+      --cloud-blue: hsl(205, 80%, 65%);
+      --border: hsl(0, 0%, 15%);
+      --card-bg: hsl(0, 0%, 6%);
+      --muted: hsl(0, 0%, 45%);
+      --green: hsl(145, 60%, 50%);
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-reveal: cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100vh; overflow: hidden; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #1a1a2e;
-      color: #eee;
-      height: 100vh;
-      overflow: hidden;
+      font-family: var(--font-sans); font-weight: 400;
+      background: var(--background); color: var(--foreground);
+      -webkit-font-smoothing: antialiased; position: relative;
     }
-    
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background:
+        radial-gradient(420px 280px at 85% -8%, hsla(18, 90%, 55%, 0.14), transparent 70%),
+        radial-gradient(380px 300px at 0% 110%, hsla(205, 80%, 65%, 0.10), transparent 70%);
+    }
+    .app { position: relative; z-index: 1; height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
     .header {
-      padding: 16px;
-      background: #16213e;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #0f3460;
+      -webkit-app-region: drag;
+      padding: 16px 18px 0; border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, hsla(0,0%,6%,0.6), transparent);
+      backdrop-filter: blur(10px);
     }
-    
-    .header h1 {
-      font-size: 18px;
-      font-weight: 600;
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .brand {
+      font-family: var(--font-serif); font-style: italic; font-weight: 400;
+      font-size: 1.8rem; line-height: 1; letter-spacing: -0.02em;
     }
-    
-    .search {
-      padding: 12px 16px;
-      background: #16213e;
+    .brand .dot { color: var(--accent-orange); font-style: normal; }
+    .header-actions { display: flex; align-items: center; gap: 10px; -webkit-app-region: no-drag; }
+    .status { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--muted); }
+    .status .led { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); transition: background .3s; }
+    .status.online .led { background: var(--green); box-shadow: 0 0 8px hsla(145,60%,50%,0.7); }
+    .close-btn {
+      width: 26px; height: 26px; border: 1px solid var(--border); border-radius: 50%;
+      background: var(--card-bg); color: var(--muted); font-size: 13px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .3s var(--ease-fluid);
     }
-    
-    .search input {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #0f3460;
-      border-radius: 6px;
-      background: #1a1a2e;
-      color: #eee;
-      font-size: 14px;
+    .close-btn:hover { color: var(--foreground); border-color: var(--accent-orange); transform: rotate(90deg); }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 18px; margin-top: 14px; -webkit-app-region: no-drag; }
+    .tab {
+      background: none; border: none; cursor: pointer; padding: 0 0 10px;
+      color: var(--muted); font-family: var(--font-sans); font-size: 12px;
+      letter-spacing: 0.06em; text-transform: uppercase; position: relative; transition: color .3s;
     }
-    
-    .clipboard-list {
-      height: calc(100vh - 120px);
-      overflow-y: auto;
-      padding: 8px;
+    .tab.active { color: var(--foreground); }
+    .tab.active::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+      background: var(--accent-orange); border-radius: 2px;
     }
-    
+
+    .view { flex: 1; overflow-y: auto; padding: 12px; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .view::-webkit-scrollbar { width: 8px; }
+    .view::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    .view.hidden { display: none; }
+
+    /* Search */
+    .search-field {
+      display: flex; align-items: center; gap: 8px; padding: 9px 12px; margin: 2px 2px 6px;
+      border: 1px solid var(--border); border-radius: 10px; background: var(--card-bg);
+      transition: border-color .3s var(--ease-fluid), box-shadow .3s var(--ease-fluid);
+    }
+    .search-field:focus-within { border-color: var(--accent-orange); box-shadow: 0 0 0 3px hsla(18,90%,55%,0.12); }
+    .search-field svg { width: 14px; height: 14px; color: var(--muted); flex-shrink: 0; }
+    .search-field input { flex: 1; border: none; outline: none; background: transparent; color: var(--foreground); font-family: var(--font-sans); font-size: 13px; }
+    .search-field input::placeholder { color: var(--muted); }
+
+    /* Clip items */
     .clipboard-item {
-      padding: 12px;
-      margin: 4px 0;
-      background: #16213e;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s;
+      position: relative; padding: 13px 14px; margin: 8px 2px; background: var(--card-bg);
+      border: 1px solid var(--border); border-radius: 12px; cursor: pointer; overflow: hidden;
+      transition: transform .4s var(--ease-fluid), border-color .4s var(--ease-fluid), background .4s var(--ease-fluid);
     }
-    
-    .clipboard-item:hover {
-      background: #0f3460;
+    .clipboard-item:hover { transform: translateY(-2px); border-color: hsla(0,0%,30%,1); background: hsl(0,0%,8%); }
+    .clipboard-item .content { font-size: 13.5px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .clipboard-item .meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); margin-top: 9px; }
+    .tag { font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--border); color: var(--cloud-blue); }
+
+    /* Section labels */
+    .section-label {
+      font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted);
+      margin: 16px 4px 8px; display: flex; align-items: center; justify-content: space-between;
     }
-    
-    .clipboard-item .content {
-      font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .this-device {
+      margin: 4px 2px 2px; padding: 12px 14px; border: 1px dashed var(--border); border-radius: 12px;
+      display: flex; align-items: center; gap: 10px; background: hsla(0,0%,6%,0.5);
     }
-    
-    .clipboard-item .meta {
-      font-size: 12px;
-      color: #888;
-      margin-top: 4px;
+    .this-device .serif { font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; }
+    .this-device .sub { font-size: 11px; color: var(--muted); }
+
+    /* Device rows */
+    .device {
+      display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin: 8px 2px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+      transition: border-color .3s var(--ease-fluid);
     }
-    
-    .clipboard-item.pinned {
-      border-left: 3px solid #e94560;
+    .device:hover { border-color: hsla(0,0%,28%,1); }
+    .device .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+    .device.online .dot { background: var(--green); box-shadow: 0 0 7px hsla(145,60%,50%,0.6); }
+    .device .info { flex: 1; min-width: 0; }
+    .device .name { font-size: 13.5px; }
+    .device .plat { font-size: 10.5px; color: var(--muted); margin-top: 2px; text-transform: capitalize; }
+    .btn {
+      border: 1px solid var(--border); background: transparent; color: var(--foreground);
+      font-family: var(--font-sans); font-size: 11.5px; padding: 6px 12px; border-radius: 8px;
+      cursor: pointer; transition: all .25s var(--ease-fluid); white-space: nowrap;
     }
-    
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: #888;
+    .btn-connect { border-color: hsla(18,90%,55%,0.5); color: var(--accent-orange); }
+    .btn-connect:hover { background: var(--accent-orange); color: #0b0b0b; }
+    .btn-disconnect { color: var(--muted); }
+    .btn-disconnect:hover { border-color: hsl(0,70%,55%); color: hsl(0,75%,62%); }
+
+    .empty-state { text-align: center; padding: 40px 24px; color: var(--muted); }
+    .empty-state .glyph { font-family: var(--font-serif); font-style: italic; font-size: 2.2rem; color: var(--foreground); opacity: 0.5; margin-bottom: 8px; }
+    .empty-state p { font-size: 12.5px; line-height: 1.6; }
+
+    /* Modal */
+    .overlay {
+      position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center;
+      background: hsla(0,0%,2%,0.7); backdrop-filter: blur(8px); padding: 20px;
     }
+    .overlay.show { display: flex; }
+    .modal {
+      width: 100%; max-width: 320px; background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px 20px; text-align: center;
+      box-shadow: 0 24px 60px hsla(0,0%,0%,0.6);
+    }
+    .modal h2 { font-family: var(--font-serif); font-style: italic; font-weight: 400; font-size: 1.5rem; margin-bottom: 6px; }
+    .modal p { font-size: 12.5px; color: var(--muted); line-height: 1.5; margin-bottom: 16px; }
+    .modal p b { color: var(--foreground); font-weight: 600; }
+    .otp-display {
+      font-family: var(--font-serif); font-size: 2.6rem; letter-spacing: 0.34em; color: var(--accent-orange);
+      padding: 8px 0 4px; padding-left: 0.34em; user-select: all;
+    }
+    .otp-input {
+      width: 100%; text-align: center; font-family: var(--font-serif); font-size: 2rem;
+      letter-spacing: 0.3em; padding: 10px; border: 1px solid var(--border); border-radius: 12px;
+      background: var(--background); color: var(--foreground); outline: none; margin-bottom: 14px;
+    }
+    .otp-input:focus { border-color: var(--accent-orange); }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn { flex: 1; padding: 10px; font-size: 13px; }
+    .btn-primary { background: var(--accent-orange); border-color: var(--accent-orange); color: #0b0b0b; }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .modal .err { color: hsl(0,75%,62%); font-size: 11.5px; min-height: 14px; margin-bottom: 8px; }
+
+    /* Toast */
+    .toast {
+      position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+      background: var(--card-bg); border: 1px solid var(--border); color: var(--foreground);
+      padding: 10px 16px; border-radius: 10px; font-size: 12.5px; z-index: 60;
+      opacity: 0; transition: all .35s var(--ease-fluid); pointer-events: none; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.ok { border-color: hsla(145,60%,50%,0.5); }
+    .toast.bad { border-color: hsl(0,70%,55%); }
+
+    /* JS-first reveal */
+    .js-reveal-ready .reveal-word {
+      display: inline-block; opacity: 0; filter: blur(16px) saturate(0.1); transform: translateY(7px);
+      transition: opacity .72s var(--ease-reveal), filter .72s var(--ease-reveal), transform .72s var(--ease-reveal); white-space: nowrap;
+    }
+    .js-reveal-ready .reveal-word.word-revealed { opacity: 1; filter: blur(0) saturate(1); transform: none; }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>📋 CopyCloud</h1>
-    <button onclick="window.close()">✕</button>
-  </div>
-  
-  <div class="search">
-    <input type="text" placeholder="🔍 Search clips...">
-  </div>
-  
-  <div class="clipboard-list" id="clipboard-list">
-    <div class="empty-state">
-      <p>Copy something to get started</p>
+  <div class="app">
+    <header class="header">
+      <div class="header-top">
+        <div class="brand" data-reveal="glass">seam<span class="dot">.</span></div>
+        <div class="header-actions">
+          <div class="status" id="status"><span class="led"></span><span id="status-text">offline</span></div>
+          <button class="close-btn" id="close-btn" title="Hide">✕</button>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" data-tab="clips">Clips</button>
+        <button class="tab" data-tab="devices">Devices</button>
+      </div>
+    </header>
+
+    <!-- Clips view -->
+    <div class="view" id="view-clips">
+      <div class="search-field">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="search-input" placeholder="Search clips…">
+      </div>
+      <div id="clipboard-list">
+        <div class="empty-state"><div class="glyph">∅</div><p>Copy something to get started</p></div>
+      </div>
+    </div>
+
+    <!-- Devices view -->
+    <div class="view hidden" id="view-devices">
+      <div class="this-device">
+        <span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--cloud-blue)"></span>
+        <div>
+          <div class="serif" id="this-name">this device</div>
+          <div class="sub">this device · <span id="this-platform"></span></div>
+        </div>
+      </div>
+
+      <div class="section-label"><span>Paired</span></div>
+      <div id="paired-list"></div>
+
+      <div class="section-label">
+        <span>On your network</span>
+        <span style="cursor:pointer;color:var(--cloud-blue)" id="refresh-devices">refresh</span>
+      </div>
+      <div id="network-list"></div>
     </div>
   </div>
 
+  <!-- OTP show modal (this device is the target) -->
+  <div class="overlay" id="overlay-code">
+    <div class="modal">
+      <h2>Pairing code</h2>
+      <p><b id="code-peer">A device</b> wants to connect. Enter this code on that device.</p>
+      <div class="otp-display" id="otp-code">000000</div>
+      <p style="margin-top:14px">Code expires in 2 minutes.</p>
+      <div class="modal-actions"><button class="btn" id="code-dismiss">Dismiss</button></div>
+    </div>
+  </div>
+
+  <!-- OTP enter modal (this device initiated) -->
+  <div class="overlay" id="overlay-enter">
+    <div class="modal">
+      <h2>Enter code</h2>
+      <p>Type the 6-digit code shown on <b id="enter-peer">the device</b>.</p>
+      <input class="otp-input" id="otp-entry" inputmode="numeric" maxlength="6" placeholder="••••••">
+      <div class="err" id="enter-err"></div>
+      <div class="modal-actions">
+        <button class="btn" id="enter-cancel">Cancel</button>
+        <button class="btn btn-primary" id="enter-verify">Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
   <script>
     const { ipcRenderer } = require('electron');
-    
-    // Load clipboard history
-    async function loadClipboard() {
-      const response = await fetch('http://localhost:3000/api/clipboard', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+
+    let allClips = [];
+    let devices = [];
+    let activePeer = null; // peer being paired (for enter modal)
+
+    /* ---------------- Tabs ---------------- */
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const name = tab.dataset.tab;
+        document.getElementById('view-clips').classList.toggle('hidden', name !== 'clips');
+        document.getElementById('view-devices').classList.toggle('hidden', name !== 'devices');
+        if (name === 'devices') ipcRenderer.send('devices:refresh');
       });
-      const data = await response.json();
-      
-      if (data.success) {
-        renderClips(data.data);
-      }
+    });
+
+    document.getElementById('close-btn').addEventListener('click', () => ipcRenderer.send('window:hide'));
+    document.getElementById('refresh-devices').addEventListener('click', () => ipcRenderer.send('devices:refresh'));
+
+    /* ---------------- Identity ---------------- */
+    ipcRenderer.invoke('identity:get').then(id => {
+      document.getElementById('this-name').textContent = id.name;
+    });
+    document.getElementById('this-platform').textContent =
+      navigator.platform || 'desktop';
+
+    /* ---------------- Status ---------------- */
+    ipcRenderer.on('server:status', (_e, s) => {
+      const el = document.getElementById('status');
+      el.classList.toggle('online', !!s.connected);
+      document.getElementById('status-text').textContent = s.connected ? 'connected' : 'offline';
+    });
+
+    /* ---------------- Devices ---------------- */
+    ipcRenderer.on('devices:list', (_e, list) => { devices = list || []; renderDevices(); });
+
+    function renderDevices() {
+      const paired = devices.filter(d => d.paired);
+      const network = devices.filter(d => !d.paired && d.online);
+
+      const pairedEl = document.getElementById('paired-list');
+      pairedEl.innerHTML = paired.length ? paired.map(d => deviceRow(d, true)).join('')
+        : `<div class="empty-state" style="padding:18px"><p>No paired devices yet</p></div>`;
+
+      const netEl = document.getElementById('network-list');
+      netEl.innerHTML = network.length ? network.map(d => deviceRow(d, false)).join('')
+        : `<div class="empty-state" style="padding:18px"><p>No other devices found on your network</p></div>`;
+
+      pairedEl.querySelectorAll('[data-unpair]').forEach(b =>
+        b.addEventListener('click', () => ipcRenderer.send('devices:unpair', b.dataset.unpair)));
+      netEl.querySelectorAll('[data-pair]').forEach(b =>
+        b.addEventListener('click', () => ipcRenderer.send('devices:pair', b.dataset.pair)));
     }
-    
-    // Render clips
+
+    function deviceRow(d, isPaired) {
+      const btn = isPaired
+        ? `<button class="btn btn-disconnect" data-unpair="${d.deviceId}">Disconnect</button>`
+        : `<button class="btn btn-connect" data-pair="${d.deviceId}">Connect</button>`;
+      return `
+        <div class="device ${d.online ? 'online' : ''}">
+          <span class="dot"></span>
+          <div class="info">
+            <div class="name">${escapeHtml(d.name)}</div>
+            <div class="plat">${escapeHtml(d.platform)}${d.online ? '' : ' · offline'}</div>
+          </div>
+          ${btn}
+        </div>`;
+    }
+
+    /* ---------------- Pairing flow ---------------- */
+    // This device is the target: show the OTP.
+    ipcRenderer.on('pair:code', (_e, info) => {
+      document.getElementById('code-peer').textContent = info.peerName || 'A device';
+      document.getElementById('otp-code').textContent = info.code;
+      document.getElementById('overlay-code').classList.add('show');
+    });
+    document.getElementById('code-dismiss').addEventListener('click', () =>
+      document.getElementById('overlay-code').classList.remove('show'));
+
+    // This device initiated: prompt for the OTP.
+    ipcRenderer.on('pair:awaiting', (_e, info) => {
+      activePeer = info.peerId;
+      document.getElementById('enter-peer').textContent = info.peerName || 'the device';
+      document.getElementById('enter-err').textContent = '';
+      document.getElementById('otp-entry').value = '';
+      document.getElementById('overlay-enter').classList.add('show');
+      document.getElementById('otp-entry').focus();
+    });
+    document.getElementById('enter-cancel').addEventListener('click', closeEnter);
+    document.getElementById('enter-verify').addEventListener('click', submitCode);
+    document.getElementById('otp-entry').addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
+
+    function submitCode() {
+      const code = document.getElementById('otp-entry').value.trim();
+      if (code.length !== 6) { document.getElementById('enter-err').textContent = 'Enter all 6 digits'; return; }
+      ipcRenderer.send('devices:verify', { targetId: activePeer, code });
+    }
+    function closeEnter() { document.getElementById('overlay-enter').classList.remove('show'); activePeer = null; }
+
+    ipcRenderer.on('pair:result', (_e, r) => {
+      if (r.ok) {
+        closeEnter();
+        document.getElementById('overlay-code').classList.remove('show');
+        toast(`Paired with ${r.peerName || 'device'}`, 'ok');
+      } else {
+        if (document.getElementById('overlay-enter').classList.contains('show')) {
+          document.getElementById('enter-err').textContent = r.reason || 'Pairing failed';
+        } else {
+          toast(r.reason || 'Pairing failed', 'bad');
+        }
+      }
+    });
+
+    ipcRenderer.on('pair:unpaired', (_e, r) => { toast('Disconnected', 'bad'); });
+    ipcRenderer.on('pair:cancelled', (_e, r) => {
+      document.getElementById('overlay-code').classList.remove('show');
+      toast('Pairing cancelled', 'bad');
+    });
+    ipcRenderer.on('clip:received', (_e, c) => { toast('Clip received', 'ok'); });
+
+    function toast(msg, kind) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show ' + (kind || '');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.className = 'toast ' + (kind || ''); }, 2600);
+    }
+
+    /* ---------------- Clips (local history view) ---------------- */
     function renderClips(clips) {
       const list = document.getElementById('clipboard-list');
-      
-      if (clips.length === 0) {
-        list.innerHTML = '<div class="empty-state"><p>Copy something to get started</p></div>';
+      if (!clips || clips.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="glyph">∅</div><p>Copy something to get started</p></div>';
         return;
       }
-      
       list.innerHTML = clips.map(clip => `
-        <div class="clipboard-item ${clip.metadata.pinned ? 'pinned' : ''}" onclick="copyClip('${clip.id}')">
-          <div class="content">${escapeHtml(clip.encrypted_content)}</div>
-          <div class="meta">${clip.content_type} • ${timeAgo(clip.created_at)}</div>
-        </div>
-      `).join('');
+        <div class="clipboard-item">
+          <div class="content">${escapeHtml(clip.preview || '')}</div>
+          <div class="meta"><span class="tag">${escapeHtml(clip.fromName || 'synced')}</span><span>${timeAgo(clip.at)}</span></div>
+        </div>`).join('');
     }
-    
-    // Copy clip to clipboard
-    async function copyClip(id) {
-      // TODO: Implement copy functionality
-      console.log('Copy clip:', id);
+
+    ipcRenderer.on('clip:received', (_e, c) => {
+      allClips.unshift({ preview: c.preview, fromName: 'synced', at: c.at });
+      if (allClips.length > 100) allClips.pop();
+      applySearch();
+    });
+
+    document.getElementById('search-input').addEventListener('input', applySearch);
+    function applySearch() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      renderClips(q ? allClips.filter(c => (c.preview || '').toLowerCase().includes(q)) : allClips);
     }
-    
-    // Time ago helper
-    function timeAgo(timestamp) {
-      const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
-      if (seconds < 60) return 'just now';
-      if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-      if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-      return `${Math.floor(seconds / 86400)}d ago`;
+
+    /* ---------------- Helpers ---------------- */
+    function timeAgo(ts) {
+      const s = Math.floor((Date.now() - ts) / 1000);
+      if (s < 60) return 'just now';
+      if (s < 3600) return `${Math.floor(s/60)}m ago`;
+      if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+      return `${Math.floor(s/86400)}d ago`;
     }
-    
-    // Escape HTML
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+    function escapeHtml(text) { const d = document.createElement('div'); d.textContent = text == null ? '' : text; return d.innerHTML; }
+
+    /* ---------------- Reveal ---------------- */
+    function initReveal() {
+      document.body.classList.add('js-reveal-ready');
+      document.querySelectorAll('[data-reveal="glass"]').forEach(el => {
+        const words = el.textContent.split(' ');
+        el.innerHTML = words.map(w => `<span class="reveal-word">${w}</span>`).join(' ');
+        el.querySelectorAll('.reveal-word').forEach((w, i) =>
+          setTimeout(() => w.classList.add('word-revealed'), 120 + i * 52));
+      });
     }
-    
-    // Initialize
-    loadClipboard();
+    initReveal();
   </script>
 </body>
 </html>

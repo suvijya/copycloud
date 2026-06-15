@@ -4,7 +4,6 @@ import websocket from '@fastify/websocket';
 import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import * as net from 'net';
 import { syncWebSocket } from './services/sync.js';
 
 export const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-not-for-production';
@@ -13,32 +12,6 @@ export const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-not-for-pro
 const users = new Map<string, any>();
 const clipboardItems = new Map<string, any[]>();
 const devices = new Map<string, any[]>();
-
-// Check if a port is available
-function isPortAvailable(port: number): Promise<boolean> {
-  return new Promise((resolve) => {
-    const server = net.createServer();
-    server.once('error', () => resolve(false));
-    server.once('listening', () => {
-      server.close(() => resolve(true));
-    });
-    server.listen(port, '127.0.0.1');
-  });
-}
-
-// Find available port starting from base port
-async function findAvailablePort(basePort: number = 3000, maxAttempts: number = 10): Promise<number> {
-  for (let i = 0; i < maxAttempts; i++) {
-    const port = basePort + i;
-    if (await isPortAvailable(port)) {
-      return port;
-    }
-    console.log(`Port ${port} in use, trying ${port + 1}...`);
-  }
-  // If all ports are busy, return the base port (will fail gracefully)
-  console.warn('All ports in use, falling back to base port');
-  return basePort;
-}
 
 // Auth middleware
 function requireAuth(request: any, reply: any, done: any) {
@@ -152,13 +125,11 @@ async function start() {
     fastify.get('/ws', { websocket: true }, syncWebSocket);
   });
 
-  // START with auto port detection
+  // START on a fixed, known port so clients can reliably find the server.
   try {
-    const basePort = parseInt(process.env.PORT || '3000');
-    const port = await findAvailablePort(basePort);
+    const port = parseInt(process.env.PORT || '3001');
     await server.listen({ port, host: '0.0.0.0' });
     console.log(`✅ Server running on port ${port}`);
-    console.log(`   Other services on ports ${basePort}-${port - 1} are already in use`);
   } catch (err) {
     console.error('Failed to start:', err);
     process.exit(1);
