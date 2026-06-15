@@ -96,7 +96,7 @@ copycloud/
 ## Environment Variables
 
 ```bash
-JWT_SECRET=***generate-a-random-secret
+JWT_SECRET=<your-random-secret-here>
 PORT=3000
 DATABASE_URL=postgresql://...
 REDIS_URL=redis://...
