@@ -13,9 +13,9 @@ Thanks for your interest in contributing!
 ## Development Setup
 
 ```bash
-npm install
-npm run build:shared
-npm run dev:server
+pnpm install
+pnpm --filter @copycloud/shared build
+pnpm dev:server
 ```
 
 ## Code Style
