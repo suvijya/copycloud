@@ -127,7 +127,7 @@ async function start() {
 
   // START on a fixed, known port so clients can reliably find the server.
   try {
-    const port = parseInt(process.env.PORT || '3001');
+    const port = parseInt(process.env.PORT || '3737');
     await server.listen({ port, host: '0.0.0.0' });
     console.log(`✅ Server running on port ${port}`);
   } catch (err) {

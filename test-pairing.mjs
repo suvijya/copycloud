@@ -1,7 +1,7 @@
 // End-to-end test of the device discovery + OTP pairing + clip sync flow.
 import WebSocket from 'ws';
 
-const URL = 'ws://localhost:3001/ws';
+const URL = 'ws://localhost:3737/ws';
 const A = { id: 'test-device-A', name: 'Laptop-A', platform: 'windows' };
 const B = { id: 'test-device-B', name: 'Desktop-B', platform: 'linux' };
 
@@ -18,7 +18,7 @@ function connect(dev) {
     const inbox = [];
     ws.on('message', (raw) => inbox.push(JSON.parse(raw.toString())));
     ws.on('open', () => {
-      ws.send(JSON.stringify({ type: 'hello', deviceId: dev.id, name: dev.name, platform: dev.platform }));
+      ws.send(JSON.stringify({ type: 'hello', deviceId: dev.id, name: dev.name, platform: dev.platform, space: dev.space }));
       resolve({ ws, inbox, dev });
     });
   });
@@ -37,6 +37,19 @@ const run = async () => {
   const seesB = listA?.devices.find((d) => d.deviceId === B.id);
   check(!!seesB, 'A discovers B on the network');
   check(seesB && seesB.online && !seesB.paired, 'B shows as online and not yet paired');
+
+  // 1b. Space isolation: a device in a different space is invisible.
+  const e = await connect({ id: 'test-device-E', name: 'Isolated-E', platform: 'linux', space: 'private-space-xyz' });
+  await wait(300);
+  a.ws.send(JSON.stringify({ type: 'list' }));
+  e.ws.send(JSON.stringify({ type: 'list' }));
+  await wait(300);
+  const listAfterE = last(a.inbox, 'device_list');
+  check(!listAfterE.devices.find((d) => d.deviceId === 'test-device-E'), 'Device in another space is hidden from A');
+  const listE = last(e.inbox, 'device_list');
+  check(!listE.devices.find((d) => d.deviceId === A.id), 'A is hidden from a device in another space');
+  e.ws.close();
+  await wait(200);
 
   // 2. Pairing: A requests pair -> B receives OTP -> A verifies.
   a.ws.send(JSON.stringify({ type: 'pair_request', targetId: B.id }));

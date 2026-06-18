@@ -2,7 +2,7 @@ import { app, BrowserWindow, Tray, Menu, clipboard, nativeImage, globalShortcut,
 import * as path from 'path';
 import * as os from 'os';
 import * as zlib from 'zlib';
-import { randomUUID } from 'crypto';
+import { randomUUID, createHash } from 'crypto';
 import Store from 'electron-store';
 import WebSocket from 'ws';
 import { encrypt, decrypt } from '@copycloud/shared';
@@ -15,11 +15,24 @@ let reconnectTimer: NodeJS.Timeout | null = null;
 let lastClipboardContent = '';
 
 const RECONNECT_DELAY = 3000;
-const DEFAULT_SERVER_URL = 'http://localhost:3001';
+const DEFAULT_SERVER_URL = 'http://localhost:3737';
 
 // Server URL can be overridden so a second PC can point at the host's LAN IP,
 // e.g. COPYCLOUD_SERVER=http://192.168.1.50:3001
 const ENV_SERVER = process.env.COPYCLOUD_SERVER;
+
+// Optional shared secret that groups a user's own devices into a private
+// "space". Devices only discover/pair within the same space, so a public
+// server can safely host many independent users. The secret is hashed locally;
+// the server never sees the raw value. Without it, devices use the 'local'
+// space (fine for a single user on a LAN).
+const ENV_SPACE = process.env.COPYCLOUD_SPACE;
+
+function getSpaceId(): string {
+  const secret = ENV_SPACE || (store.get('space_secret') as string);
+  if (!secret) return 'local';
+  return createHash('sha256').update(secret).digest('hex');
+}
 
 // A previous build persisted a bad auto-detected `server_url`; clear it.
 store.delete('server_url');
@@ -202,7 +215,7 @@ function connectToServer() {
   socket.on('open', () => {
     console.log('Connected to server');
     toRenderer('server:status', { connected: true });
-    sendToServer({ type: 'hello', deviceId: getDeviceId(), name: getDeviceName(), platform: getPlatform() });
+    sendToServer({ type: 'hello', deviceId: getDeviceId(), name: getDeviceName(), platform: getPlatform(), space: getSpaceId() });
     sendToServer({ type: 'list' });
   });
 

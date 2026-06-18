@@ -19,6 +19,7 @@ interface DeviceConn {
   deviceId: string;
   name: string;
   platform: string;
+  space: string;
 }
 
 interface Pairing {
@@ -67,8 +68,9 @@ function send(deviceId: string, msg: unknown): void {
 }
 
 function sendDeviceList(viewerId: string): void {
+  const viewerSpace = online.get(viewerId)?.space ?? 'local';
   const devices = [...online.values()]
-    .filter((c) => c.deviceId !== viewerId)
+    .filter((c) => c.deviceId !== viewerId && c.space === viewerSpace)
     .map((c) => ({
       deviceId: c.deviceId,
       name: c.name,
@@ -121,6 +123,7 @@ export function syncWebSocket(conn: any, _request: any): void {
           deviceId: id,
           name: msg.name || 'Device',
           platform: msg.platform || 'unknown',
+          space: msg.space || 'local',
         });
         // Hand back existing pairings (with keys) so this device can decrypt peers.
         send(id, {
@@ -142,7 +145,9 @@ export function syncWebSocket(conn: any, _request: any): void {
       case 'pair_request': {
         if (!myId) return;
         const target = msg.targetId;
-        if (!online.has(target)) {
+        const me = online.get(myId)!;
+        const targetConn = online.get(target);
+        if (!targetConn || targetConn.space !== me.space) {
           send(myId, { type: 'pair_failed', peerId: target, reason: 'Device offline' });
           break;
         }
@@ -152,10 +157,9 @@ export function syncWebSocket(conn: any, _request: any): void {
         }
         const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
         pending.set(canon(myId, target), { code, expires: Date.now() + OTP_TTL_MS, attempts: 0, initiator: myId });
-        const me = online.get(myId)!;
         // Target shows the OTP; initiator is prompted to enter it.
         send(target, { type: 'pair_code', peerId: myId, peerName: me.name, code });
-        send(myId, { type: 'pair_awaiting', peerId: target, peerName: online.get(target)!.name });
+        send(myId, { type: 'pair_awaiting', peerId: target, peerName: targetConn.name });
         break;
       }
 
