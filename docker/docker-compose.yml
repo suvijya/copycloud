@@ -4,13 +4,92 @@ services:
   server:
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile.server
+    container_name: copycloud-server
     ports:
-      - "3000:3000"
+      - "${PORT:-3737}:3737"
     environment:
-      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in .env}
-      - PORT=3000
+      - NODE_ENV=production
+      - PORT=3737
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-copycloud}
+      - DB_PASSWORD=${DB_PASSWORD:-copycloud}
+      - DB_NAME=${DB_NAME:-copycloud}
+      - JWT_SECRET=${JWT_SECRET:-change-this-in-production}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+      - RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-60000}
     volumes:
-      - ../apps/server:/app/apps/server
-      - ../packages/shared:/app/packages/shared
-    command: npm run dev
+      - server-storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - copycloud
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: copycloud-postgres
+    environment:
+      - POSTGRES_DB=${DB_NAME:-copycloud}
+      - POSTGRES_USER=${DB_USER:-copycloud}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-copycloud}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-copycloud}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - copycloud
+
+  redis:
+    image: redis:7-alpine
+    container_name: copycloud-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - copycloud
+
+  # Nginx reverse proxy (optional, for production)
+  nginx:
+    image: nginx:alpine
+    container_name: copycloud-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - copycloud
+    profiles:
+      - production
+
+volumes:
+  postgres-data:
+  redis-data:
+  server-storage:
+
+networks:
+  copycloud:
+    driver: bridge

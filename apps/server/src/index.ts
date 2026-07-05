@@ -1,139 +1,225 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import websocket from '@fastify/websocket';
-import * as jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-import { syncWebSocket } from './services/sync.js';
+import rateLimit from '@fastify/rate-limit';
+import helmet from '@fastify/helmet';
+import multipart from '@fastify/multipart';
+import fastifyStatic from '@fastify/static';
+import swagger from '@fastify/swagger';
+import swaggerUi from '@fastify/swagger-ui';
+import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { config } from './config';
+import { initializeDatabase, closeDatabase } from './database';
+import { authRoutes } from './routes/auth';
+import { clipboardRoutes } from './routes/clipboard';
+import { deviceRoutes } from './routes/device';
+import { syncWebSocket } from './services/sync';
 
-export const JWT_SECRET = process.env.JWT_SECRET || 'dev-only-secret-not-for-production';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// In-memory stores
-const users = new Map<string, any>();
-const clipboardItems = new Map<string, any[]>();
-const devices = new Map<string, any[]>();
-
-// Auth middleware
-function requireAuth(request: any, reply: any, done: any) {
-  const auth = request.headers.authorization;
-  if (!auth || !auth.startsWith('Bearer ')) {
-    reply.status(401).send({ success: false, error: 'Unauthorized - No token' });
-    return;
+// Type declarations
+declare module 'fastify' {
+  interface FastifyRequest {
+    user: {
+      id: string;
+      email: string;
+    };
   }
-  try {
-    const decoded = jwt.verify(auth.split(' ')[1], JWT_SECRET);
-    request.user = decoded;
-    done();
-  } catch (err: any) {
-    reply.status(401).send({ success: false, error: 'Unauthorized - Invalid token' });
+  interface FastifyInstance {
+    authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
 }
 
-const server: any = Fastify({ logger: false });
+async function bootstrap() {
+  // Initialize database
+  await initializeDatabase();
 
-async function start() {
-  await server.register(cors, { origin: true, credentials: true });
-  await server.register(websocket);
-
-  // HEALTH
-  server.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
-
-  // AUTH
-  server.post('/api/auth/register', async (request: any, reply: any) => {
-    const { email, password } = request.body as any;
-    if (users.has(email)) return reply.status(400).send({ success: false, error: 'User already exists' });
-    const passwordHash = await bcrypt.hash(password, 10);
-    const user = { id: uuidv4(), email, password_hash: passwordHash, created_at: new Date(), plan: 'free' };
-    users.set(email, user);
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
-    return { success: true, token, user: { id: user.id, email } };
+  const server = Fastify({
+    logger: {
+      level: config.isDev ? 'info' : 'warn',
+      transport: config.isDev ? {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'HH:MM:ss Z',
+          ignore: 'pid,hostname',
+        },
+      } : undefined,
+    },
   });
 
-  server.post('/api/auth/login', async (request: any, reply: any) => {
-    const { email, password } = request.body as any;
-    const user = users.get(email);
-    if (!user) return reply.status(401).send({ success: false, error: 'Invalid credentials' });
-    const valid = await bcrypt.compare(password, user.password_hash);
-    if (!valid) return reply.status(401).send({ success: false, error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
-    return { success: true, token, user: { id: user.id, email } };
+  // Register plugins
+  await server.register(cors, {
+    origin: config.isDev ? true : process.env.ALLOWED_ORIGINS?.split(',') || false,
+    credentials: true,
   });
 
-  // CLIPBOARD (all require auth)
-  server.get('/api/clipboard', { preHandler: requireAuth }, async (request: any) => {
-    return { success: true, data: clipboardItems.get(request.user.id) || [] };
+  await server.register(helmet, {
+    contentSecurityPolicy: config.isDev ? false : undefined,
   });
 
-  server.post('/api/clipboard', { preHandler: requireAuth }, async (request: any) => {
-    const userId = request.user.id;
-    const { content_type, encrypted_content, metadata, device_id } = request.body as any;
-    const item = { id: uuidv4(), user_id: userId, device_id, content_type, encrypted_content, metadata: { ...metadata, pinned: false }, created_at: new Date() };
-    const items = clipboardItems.get(userId) || [];
-    items.unshift(item);
-    if (items.length > 100) items.pop();
-    clipboardItems.set(userId, items);
-    return { success: true, data: item };
+  await server.register(rateLimit, {
+    max: config.rateLimit.max,
+    timeWindow: config.rateLimit.window,
   });
 
-  server.delete('/api/clipboard/:id', { preHandler: requireAuth }, async (request: any) => {
-    const { id } = request.params as any;
-    const items = clipboardItems.get(request.user.id) || [];
-    clipboardItems.set(request.user.id, items.filter((i: any) => i.id !== id));
-    return { success: true };
+  await server.register(multipart, {
+    limits: {
+      fileSize: config.storage.maxFileSize,
+    },
   });
 
-  server.patch('/api/clipboard/:id/pin', { preHandler: requireAuth }, async (request: any) => {
-    const { id } = request.params as any;
-    const items = clipboardItems.get(request.user.id) || [];
-    const item = items.find((i: any) => i.id === id);
-    if (item) item.metadata.pinned = !item.metadata.pinned;
-    return { success: true, data: item };
+  // Swagger documentation
+  await server.register(swagger, {
+    openapi: {
+      openapi: '3.0.0',
+      info: {
+        title: 'CopyCloud API',
+        description: 'Cross-device clipboard synchronization API',
+        version: '1.0.0',
+      },
+      servers: [
+        {
+          url: `http://localhost:${config.port}`,
+          description: 'Development server',
+        },
+      ],
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+    },
   });
 
-  // DEVICES (all require auth)
-  server.get('/api/devices', { preHandler: requireAuth }, async (request: any) => {
-    return { success: true, data: devices.get(request.user.id) || [] };
+  await server.register(swaggerUi, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: true,
+    },
   });
 
-  server.post('/api/devices/register', { preHandler: requireAuth }, async (request: any) => {
-    const { name, platform } = request.body as any;
-    const device = { id: uuidv4(), user_id: request.user.id, name, platform, last_seen: new Date(), is_online: true };
-    const userDevices = devices.get(request.user.id) || [];
-    userDevices.push(device);
-    devices.set(request.user.id, userDevices);
-    return { success: true, data: device };
+  // Static files (for file storage)
+  await server.register(fastifyStatic, {
+    root: path.join(config.storage.path),
+    prefix: '/files/',
+    decorateReply: false,
   });
 
-  server.patch('/api/devices/:id/status', { preHandler: requireAuth }, async (request: any) => {
-    const { id } = request.params as any;
-    const { is_online } = request.body as any;
-    const userDevices = devices.get(request.user.id) || [];
-    const device = userDevices.find((d: any) => d.id === id);
-    if (device) { device.is_online = is_online; device.last_seen = new Date(); }
-    return { success: true, data: device };
+  // JWT authentication decorator
+  server.decorate('authenticate', async (request, reply) => {
+    try {
+      const auth = request.headers.authorization;
+      if (!auth || !auth.startsWith('Bearer ')) {
+        throw new Error('No token');
+      }
+
+      const token = auth.substring(7);
+      const decoded = jwt.verify(token, config.jwt.secret) as { id: string; email: string };
+      request.user = decoded;
+    } catch (error) {
+      reply.status(401).send({
+        success: false,
+        error: 'Unauthorized',
+      });
+    }
   });
 
-  server.delete('/api/devices/:id', { preHandler: requireAuth }, async (request: any) => {
-    const { id } = request.params as any;
-    const userDevices = devices.get(request.user.id) || [];
-    devices.set(request.user.id, userDevices.filter((d: any) => d.id !== id));
-    return { success: true };
-  });
+  // Health check
+  server.get('/health', async () => ({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+    environment: config.nodeEnv,
+  }));
 
-  // WEBSOCKET
-  await server.register(async function (fastify: any) {
+  // API info
+  server.get('/api', async () => ({
+    name: 'CopyCloud API',
+    version: '1.0.0',
+    docs: `/docs`,
+    endpoints: {
+      auth: '/api/auth',
+      clipboard: '/api/clipboard',
+      devices: '/api/devices',
+      websocket: '/ws',
+    },
+  }));
+
+  // Register routes
+  await server.register(authRoutes, { prefix: '/api/auth' });
+  await server.register(clipboardRoutes, { prefix: '/api/clipboard' });
+  await server.register(deviceRoutes, { prefix: '/api/devices' });
+
+  // WebSocket
+  await server.register(async function (fastify) {
     fastify.get('/ws', { websocket: true }, syncWebSocket);
   });
 
-  // START on a fixed, known port so clients can reliably find the server.
+  // Error handler
+  server.setErrorHandler((error, request, reply) => {
+    server.log.error(error);
+    
+    if (error.validation) {
+      return reply.status(400).send({
+        success: false,
+        error: 'Validation error',
+        details: error.validation,
+      });
+    }
+
+    if (error.statusCode) {
+      return reply.status(error.statusCode).send({
+        success: false,
+        error: error.message,
+      });
+    }
+
+    reply.status(500).send({
+      success: false,
+      error: config.isDev ? error.message : 'Internal server error',
+    });
+  });
+
+  // Graceful shutdown
+  const shutdown = async () => {
+    console.log('Shutting down...');
+    await server.close();
+    await closeDatabase();
+    process.exit(0);
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+
+  // Start server
   try {
-    const port = parseInt(process.env.PORT || '3737');
-    await server.listen({ port, host: '0.0.0.0' });
-    console.log(`✅ Server running on port ${port}`);
+    await server.listen({
+      port: config.port,
+      host: config.host,
+    });
+
+    console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║                    CopyCloud Server                       ║
+╠═══════════════════════════════════════════════════════════╣
+║  Server:     http://${config.host}:${config.port}              ║
+║  API Docs:   http://localhost:${config.port}/docs              ║
+║  WebSocket:  ws://localhost:${config.port}/ws                  ║
+║  Health:     http://localhost:${config.port}/health             ║
+║  Environment: ${config.nodeEnv.padEnd(10)}                       ║
+╚═══════════════════════════════════════════════════════════╝
+    `);
   } catch (err) {
-    console.error('Failed to start:', err);
+    server.log.error(err);
     process.exit(1);
   }
 }
 
-start();
+bootstrap();

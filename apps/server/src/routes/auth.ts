@@ -1,53 +1,149 @@
-import { FastifyInstance } from 'fastify';
-import { hash, compare } from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
-import * as jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../index.js';
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { z } from 'zod';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { config } from '../config';
+import { UserModel } from '../models/index';
 
-// In-memory store (replace with database in production)
-const users = new Map<string, any>();
+// Validation schemas
+const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(100),
+  display_name: z.string().min(1).max(100).optional(),
+});
 
-export async function authRoutes(fastify: FastifyInstance) {
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+});
+
+export async function authRoutes(fastify: FastifyInstance): Promise<void> {
   // Register
-  fastify.post('/register', async (request, reply) => {
-    const { email, password } = request.body as any;
-    
-    if (users.has(email)) {
-      return reply.status(400).send({ success: false, error: 'User already exists' });
+  fastify.post('/register', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const body = registerSchema.parse(request.body);
+      
+      // Check if user exists
+      const existing = await UserModel.findByEmail(body.email);
+      if (existing) {
+        return reply.status(409).send({
+          success: false,
+          error: 'Email already registered',
+        });
+      }
+
+      // Hash password
+      const passwordHash = await bcrypt.hash(body.password, 10);
+
+      // Create user
+      const user = await UserModel.create({
+        email: body.email,
+        password_hash: passwordHash,
+        display_name: body.display_name || body.email.split('@')[0],
+      });
+
+      // Generate token
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }
+      );
+
+      return {
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          display_name: user.display_name,
+          plan: user.plan,
+        },
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({
+          success: false,
+          error: 'Validation error',
+          details: error.errors,
+        });
+      }
+      throw error;
     }
-    
-    const passwordHash = await hash(password, 10);
-    const user = {
-      id: uuidv4(),
-      email,
-      password_hash: passwordHash,
-      created_at: new Date(),
-      plan: 'free',
-    };
-    
-    users.set(email, user);
-    
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
-    
-    return { success: true, token, user: { id: user.id, email } };
   });
-  
+
   // Login
-  fastify.post('/login', async (request, reply) => {
-    const { email, password } = request.body as any;
-    
-    const user = users.get(email);
+  fastify.post('/login', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const body = loginSchema.parse(request.body);
+      
+      // Find user
+      const user = await UserModel.findByEmail(body.email);
+      if (!user) {
+        return reply.status(401).send({
+          success: false,
+          error: 'Invalid credentials',
+        });
+      }
+
+      // Verify password
+      const valid = await bcrypt.compare(body.password, user.password_hash);
+      if (!valid) {
+        return reply.status(401).send({
+          success: false,
+          error: 'Invalid credentials',
+        });
+      }
+
+      // Update last login
+      await UserModel.updateLastLogin(user.id);
+
+      // Generate token
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        config.jwt.secret,
+        { expiresIn: config.jwt.expiresIn }
+      );
+
+      return {
+        success: true,
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          display_name: user.display_name,
+          plan: user.plan,
+        },
+      };
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({
+          success: false,
+          error: 'Validation error',
+          details: error.errors,
+        });
+      }
+      throw error;
+    }
+  });
+
+  // Get current user
+  fastify.get('/me', {
+    preHandler: [fastify.authenticate],
+  }, async (request: FastifyRequest) => {
+    const user = await UserModel.findById(request.user.id);
     if (!user) {
-      return reply.status(401).send({ success: false, error: 'Invalid credentials' });
+      throw new Error('User not found');
     }
-    
-    const valid = await compare(password, user.password_hash);
-    if (!valid) {
-      return reply.status(401).send({ success: false, error: 'Invalid credentials' });
-    }
-    
-    const token = jwt.sign({ id: user.id, email }, JWT_SECRET, { expiresIn: '7d' });
-    
-    return { success: true, token, user: { id: user.id, email } };
+
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        display_name: user.display_name,
+        plan: user.plan,
+        created_at: user.created_at,
+      },
+    };
   });
 }

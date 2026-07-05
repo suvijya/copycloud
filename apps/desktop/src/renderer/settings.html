@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CopyCloud Settings</title>
+  <style>
+    :root {
+      --background: hsl(0, 0%, 3%);
+      --foreground: hsl(0, 0%, 98%);
+      --accent-orange: hsl(18, 90%, 55%);
+      --cloud-blue: hsl(205, 80%, 65%);
+      --border: hsl(0, 0%, 15%);
+      --card-bg: hsl(0, 0%, 6%);
+      --muted: hsl(0, 0%, 45%);
+      --green: hsl(145, 60%, 50%);
+      --red: hsl(0, 70%, 60%);
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--background);
+      color: var(--foreground);
+      padding: 20px;
+      overflow-y: auto;
+    }
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section {
+      margin-bottom: 24px;
+    }
+    .section-title {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .field {
+      margin-bottom: 16px;
+    }
+    .field:last-child {
+      margin-bottom: 0;
+    }
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .field input[type="text"],
+    .field input[type="url"],
+    .field input[type="password"],
+    .field input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--foreground);
+      font-size: 13px;
+      font-family: var(--font-sans);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus {
+      border-color: var(--accent-orange);
+    }
+    .field .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .switch-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .switch-field:last-child {
+      border-bottom: none;
+    }
+    .switch-field .label {
+      flex: 1;
+    }
+    .switch-field .label .title {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .switch-field .label .desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--border);
+      border-radius: 12px;
+      transition: 0.2s;
+    }
+    .switch .slider::before {
+      content: '';
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--foreground);
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+    .switch input:checked + .slider {
+      background: var(--accent-orange);
+    }
+    .switch input:checked + .slider::before {
+      transform: translateX(20px);
+    }
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: var(--font-sans);
+    }
+    .btn-primary {
+      background: var(--accent-orange);
+      color: #000;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      border-color: var(--muted);
+    }
+    .btn-danger {
+      background: transparent;
+      color: var(--red);
+      border: 1px solid var(--red);
+    }
+    .btn-danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .info-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+    }
+    .info-box.blue {
+      background: hsla(205, 80%, 65%, 0.1);
+      border: 1px solid hsla(205, 80%, 65%, 0.3);
+    }
+    .info-box.yellow {
+      background: hsla(45, 80%, 60%, 0.1);
+      border: 1px solid hsla(45, 80%, 60%, 0.3);
+    }
+    .info-box svg {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+    .info-box p {
+      font-size: 11.5px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .info-box.blue p { color: var(--cloud-blue); }
+    .info-box.yellow p { color: hsl(45, 80%, 60%); }
+  </style>
+</head>
+<body>
+  <h1>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+    Settings
+  </h1>
+
+  <div class="section">
+    <div class="section-title">CONNECTION</div>
+    <div class="card">
+      <div class="field">
+        <label>Server URL</label>
+        <input type="url" id="server-url" placeholder="http://192.168.1.100:3737">
+        <div class="hint">Your CopyCloud server address</div>
+      </div>
+      <div class="field">
+        <label>Device Name</label>
+        <input type="text" id="device-name" placeholder="My Computer">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="save-connection">Save & Reconnect</button>
+      </div>
+      <div class="info-box blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 16v-4"></path>
+          <path d="M12 8h.01"></path>
+        </svg>
+        <p>Make sure your computer and phone are on the same network, or use a public server URL for internet sync.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">SECURITY</div>
+    <div class="card">
+      <div class="field">
+        <label>Encryption Key</label>
+        <input type="password" id="encryption-key" placeholder="Enter or generate a key">
+        <div class="hint">Must match the key on your other devices</div>
+      </div>
+      <div class="field">
+        <label>Space Secret (Optional)</label>
+        <input type="password" id="space-secret" placeholder="Leave empty for local network only">
+        <div class="hint">Groups your devices for internet sync</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="save-security">Save Security Settings</button>
+      </div>
+      <div class="info-box yellow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <p>Save your encryption key somewhere safe. If you lose it, you won't be able to decrypt your clipboard history.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">APP</div>
+    <div class="card">
+      <div class="switch-field">
+        <div class="label">
+          <div class="title">Clipboard Monitoring</div>
+          <div class="desc">Automatically sync clipboard changes</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="monitor-clipboard" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="switch-field">
+        <div class="label">
+          <div class="title">Notifications</div>
+          <div class="desc">Show notifications on clipboard updates</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="show-notifications" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="switch-field">
+        <div class="label">
+          <div class="title">Launch at Startup</div>
+          <div class="desc">Start CopyCloud when you log in</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="launch-startup" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">HISTORY</div>
+    <div class="card">
+      <div class="field">
+        <label>Maximum History Items</label>
+        <input type="number" id="max-history" value="100" min="10" max="1000">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-danger" id="clear-history">Clear All History</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    // Load current settings
+    async function loadSettings() {
+      const settings = await ipcRenderer.invoke('settings:get');
+      const serverUrl = await ipcRenderer.invoke('server:url:get');
+      const deviceName = await ipcRenderer.invoke('device:name:get');
+      const encryptionKey = await ipcRenderer.invoke('encryption:key:get');
+      const spaceSecret = await ipcRenderer.invoke('space:secret:get');
+
+      document.getElementById('server-url').value = serverUrl || '';
+      document.getElementById('device-name').value = deviceName || '';
+      document.getElementById('encryption-key').value = encryptionKey || '';
+      document.getElementById('space-secret').value = spaceSecret || '';
+      
+      document.getElementById('monitor-clipboard').checked = settings.monitor_clipboard !== false;
+      document.getElementById('show-notifications').checked = settings.show_notifications !== false;
+      document.getElementById('launch-startup').checked = settings.launch_at_startup !== false;
+      document.getElementById('max-history').value = settings.max_history_items || 100;
+    }
+
+    // Save connection settings
+    document.getElementById('save-connection').addEventListener('click', () => {
+      const serverUrl = document.getElementById('server-url').value.trim();
+      const deviceName = document.getElementById('device-name').value.trim();
+      
+      if (serverUrl) ipcRenderer.send('server:url:set', serverUrl);
+      if (deviceName) ipcRenderer.send('device:name:set', deviceName);
+      
+      showToast('Connection settings saved');
+    });
+
+    // Save security settings
+    document.getElementById('save-security').addEventListener('click', () => {
+      const encryptionKey = document.getElementById('encryption-key').value.trim();
+      const spaceSecret = document.getElementById('space-secret').value.trim();
+      
+      if (encryptionKey) ipcRenderer.send('encryption:key:set', encryptionKey);
+      ipcRenderer.send('space:secret:set', spaceSecret);
+      
+      showToast('Security settings saved');
+    });
+
+    // App settings
+    document.getElementById('monitor-clipboard').addEventListener('change', (e) => {
+      ipcRenderer.send('settings:update', { monitor_clipboard: e.target.checked });
+    });
+
+    document.getElementById('show-notifications').addEventListener('change', (e) => {
+      ipcRenderer.send('settings:update', { show_notifications: e.target.checked });
+    });
+
+    document.getElementById('launch-startup').addEventListener('change', (e) => {
+      ipcRenderer.send('settings:update', { launch_at_startup: e.target.checked });
+    });
+
+    document.getElementById('max-history').addEventListener('change', (e) => {
+      ipcRenderer.send('settings:update', { max_history_items: parseInt(e.target.value) });
+    });
+
+    // Clear history
+    document.getElementById('clear-history').addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear all clipboard history?')) {
+        ipcRenderer.send('history:clear');
+        showToast('History cleared');
+      }
+    });
+
+    // Toast notification
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: var(--card-bg); border: 1px solid var(--border); color: var(--foreground);
+        padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 1000;
+        animation: fadeIn 0.2s ease;
+      `;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+
+    // Load settings on start
+    loadSettings();
+  </script>
+</body>
+</html>
