@@ -1,31 +1,20 @@
-# Contributing to CopyCloud
+# Contributing
 
-Thanks for your interest in contributing!
-
-## How to Contribute
+## Getting Started
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Clone your fork
+3. Create a feature branch
+4. Make your changes
+5. Submit a pull request
 
 ## Development Setup
 
-```bash
-pnpm install
-pnpm --filter @copycloud/shared build
-pnpm dev:server
-```
+npm install
+npm run dev
 
 ## Code Style
 
-- Use TypeScript for all new code
-- Follow existing patterns in the codebase
+- Use TypeScript strict mode
+- Follow ESLint rules
 - Write meaningful commit messages
-
-## Reporting Issues
-
-- Use GitHub Issues for bug reports
-- Include steps to reproduce
-- Include your environment details
