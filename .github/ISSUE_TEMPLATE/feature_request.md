@@ -1,16 +1,18 @@
 ---
 name: Feature Request
-about: Suggest an idea for CopyCloud
-title: '[FEATURE] '
+about: Suggest a new feature
+title: "[FEATURE] "
 labels: enhancement
-assignees: suvijya
 ---
 
-**Is your feature request related to a problem?**
-A clear description of the problem.
+## Description
 
-**Describe the solution you'd like**
-What you want to happen.
+A clear description of the feature.
 
-**Additional context**
-Any other context or screenshots.
+## Use case
+
+Why is this feature needed?
+
+## Proposed solution
+
+How should this work?
