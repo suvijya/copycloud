@@ -47,3 +47,8 @@ All notable changes to CopyCloud will be documented in this file.
 - GitHub sponsors
 - API docs
 - Deployment guide
+
+## 2026-07-07
+
+### Changed
+- Documentation improvements and maintenance
