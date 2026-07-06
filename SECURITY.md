@@ -1,25 +1,14 @@
 # Security Policy
 
-## Supported Versions
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.1.x   | :white_check_mark: |
-
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it responsibly.
 
-**Email:** suvijya123@gmail.com
+- Email: suvijya123@gmail.com
+- Do NOT open a public issue
 
-Please include:
-- Description of the vulnerability
-- Steps to reproduce
-- Potential impact
-- Suggested fix (if any)
+## Best Practices
 
-## Security Best Practices
-
-- Never commit API keys or secrets
-- Use environment variables for configuration
-- Enable encryption for clipboard data in production
+- Use environment variables for secrets
+- Never commit API keys
+- Use HTTPS in production
