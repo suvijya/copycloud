@@ -24,3 +24,26 @@ All notable changes to CopyCloud will be documented in this file.
 - Electron desktop app
 - Fastify server
 - React Native mobile setup
+
+## 2026-06-29
+
+### Added
+- CODEOWNERS file
+- Security policy
+- Contributing guidelines
+- Editorconfig
+- Prettier config
+- NVM config
+- Makefile
+- Architecture docs
+- VS Code settings
+- Docker compose
+- GitHub templates
+- Setup script
+- Env example
+- Project status
+- MIT License
+- Dependabot config
+- GitHub sponsors
+- API docs
+- Deployment guide
