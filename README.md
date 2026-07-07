@@ -110,6 +110,8 @@ REDIS_URL=redis://...
 4. Push to the branch (`git push origin feature/amazing`)
 5. Open a Pull Request
 
+> **Tip:** Keep your fork in sync by running `git fetch upstream && git merge upstream/master` before starting new work.
+
 ## License
 
 MIT © Suvijya Arya
