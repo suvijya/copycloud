@@ -91,7 +91,7 @@ copycloud/
 - `DELETE /api/devices/:id` — Remove device
 
 ### WebSocket
-- `ws://localhost:3000/ws` — Real-time sync
+- `ws://localhost:3000/ws` — Real-time clipboard sync
 
 ## Environment Variables
 
