@@ -113,6 +113,8 @@ async function bootstrap() {
   });
 
   // JWT authentication decorator
+  // Validates the JWT token from the Authorization header and attaches
+  // the decoded user payload to request.user for downstream route handlers.
   server.decorate('authenticate', async (request, reply) => {
     try {
       const auth = request.headers.authorization;
