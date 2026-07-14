@@ -20,6 +20,11 @@ All notable changes to CopyCloud will be documented in this file.
 - Auth middleware compatibility
 - CI/CD pipeline issues
 
+## 2026-07-15
+
+### Changed
+- Documentation review and minor consistency improvements
+
 ## [0.1.0] - 2026-06-15
 
 ### Added
