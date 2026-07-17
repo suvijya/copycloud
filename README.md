@@ -55,6 +55,8 @@ pnpm dev:server
 pnpm dev:desktop
 ```
 
+The server runs on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
+
 ## Project Structure
 
 ```
