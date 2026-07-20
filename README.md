@@ -8,7 +8,7 @@
 
 > *"Copy once, paste everywhere."*
 
-A cross-device clipboard synchronization tool for seamless copy-paste across all your devices.
+A cross-device clipboard synchronization tool for seamless copy and paste across all your devices.
 
 ## Features
 
