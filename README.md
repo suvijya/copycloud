@@ -33,7 +33,6 @@ A cross-device clipboard synchronization tool for seamless copy and paste across
 ### Prerequisites
 
 - Node.js 20+
-- pnpm 9+ (`corepack enable`)
 
 ### Installation
 
@@ -43,16 +42,16 @@ git clone https://github.com/suvijya/copycloud.git
 cd copycloud
 
 # Install all dependencies (monorepo)
-pnpm install
+npm install
 
 # Build shared package
-pnpm --filter @copycloud/shared build
+npm run build:shared
 
 # Start server
-pnpm dev:server
+npm run dev:server
 
 # Start desktop app
-pnpm dev:desktop
+npm run dev:desktop
 ```
 
 The server runs on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
