@@ -2,6 +2,11 @@
 
 All notable changes to CopyCloud will be documented in this file.
 
+## 2026-07-25
+
+### Changed
+- Documentation maintenance and changelog update
+
 ## 2026-07-22
 
 ### Changed
