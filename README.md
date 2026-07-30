@@ -33,6 +33,8 @@ A cross-device clipboard synchronization tool for seamless copy and paste across
 ### Prerequisites
 
 - Node.js 20+
+- PostgreSQL
+- Redis
 
 ### Installation
 
