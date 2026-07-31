@@ -58,6 +58,23 @@ npm run dev:desktop
 
 The server runs on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
 
+### Docker
+
+You can also run the full stack with Docker Compose, which provisions PostgreSQL, Redis, and the server automatically:
+
+```bash
+# Copy the environment template and set your secrets
+cp .env.example .env   # edit JWT_SECRET and passwords before starting
+
+# Start all services (server + Postgres + Redis)
+docker compose -f docker/docker-compose.yml up -d
+
+# Include the Nginx reverse proxy for production-like setup
+docker compose -f docker/docker-compose.yml --profile production up -d
+```
+
+The server is exposed on port `3737` by default (override with the `PORT` environment variable).
+
 ## Project Structure
 
 ```
