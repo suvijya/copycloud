@@ -44,16 +44,16 @@ git clone https://github.com/suvijya/copycloud.git
 cd copycloud
 
 # Install all dependencies (monorepo)
-npm install
+pnpm install
 
 # Build shared package
-npm run build:shared
+pnpm run build:shared
 
 # Start server
-npm run dev:server
+pnpm run dev:server
 
 # Start desktop app
-npm run dev:desktop
+pnpm run dev:desktop
 ```
 
 The server runs on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
@@ -87,6 +87,7 @@ copycloud/
 │   ├── shared/           # Shared types and utilities
 │   ├── ui/               # Shared UI components
 │   └── proto/            # Protocol definitions
+├── scripts/              # Utility scripts
 ├── docker/               # Docker configuration
 ├── docs/                 # Documentation
 └── .github/workflows/    # CI/CD pipelines
