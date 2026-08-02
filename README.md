@@ -73,7 +73,7 @@ docker compose -f docker/docker-compose.yml up -d
 docker compose -f docker/docker-compose.yml --profile production up -d
 ```
 
-The server is exposed on port `3737` by default (override with the `PORT` environment variable).
+The Docker setup exposes the server on port `3737` by default (override with the `PORT` environment variable).
 
 ## Project Structure
 
@@ -122,6 +122,20 @@ PORT=3000
 DATABASE_URL=postgresql://...
 REDIS_URL=redis://...
 ```
+
+## FAQ
+
+**Q: What happens when a device goes offline?**
+A: Clipboard content is stored securely in the database. When the device reconnects, it syncs any clips it missed automatically.
+
+**Q: How is my clipboard data encrypted?**
+A: All clipboard content is encrypted with AES-256-GCM using a key derived from your account credentials. Data is encrypted before leaving your device and can only be decrypted by your other authorized devices.
+
+**Q: Can I use this without an internet connection?**
+A: No — CopyCloud requires a network connection between your devices and the server for synchronization. However, clipboard history is cached locally so you can still access past clips offline.
+
+**Q: Is there a limit to clipboard size?**
+A: Text clips have no practical limit. Image clips are supported up to 10 MB. Very large items may experience slower sync times.
 
 ## Contributing
 
