@@ -137,6 +137,25 @@ A: No — CopyCloud requires a network connection between your devices and the s
 **Q: Is there a limit to clipboard size?**
 A: Text clips have no practical limit. Image clips are supported up to 10 MB. Very large items may experience slower sync times.
 
+**Q: Which clipboard content types are supported?**
+A: CopyCloud auto-categorizes content into text, images, code snippets, and URLs. All four types sync across devices with full encryption.
+
+## Troubleshooting
+
+**Server won't start**
+- Ensure PostgreSQL and Redis are running and accessible.
+- Verify your `DATABASE_URL` and `REDIS_URL` match your local setup.
+- Check that port 3000 (or your configured `PORT`) is not already in use.
+
+**Clipboard not syncing**
+- Confirm both devices are registered and online (`GET /api/devices`).
+- Check WebSocket connection in the browser developer console.
+- Ensure `JWT_SECRET` is set and identical across server restarts.
+
+**Docker build fails**
+- Run `docker compose -f docker/docker-compose.yml down -v` to clear stale volumes, then rebuild.
+- Make sure `.env` exists (copy from `.env.example`) with all required variables.
+
 ## Contributing
 
 1. Fork the repo
