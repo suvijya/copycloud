@@ -56,7 +56,7 @@ pnpm run dev:server
 pnpm run dev:desktop
 ```
 
-The server runs on `http://localhost:3000` by default (configurable via the `PORT` environment variable).
+The server runs on `http://localhost:3737` by default (configurable via the `PORT` environment variable).
 
 ### Docker
 
@@ -112,15 +112,43 @@ copycloud/
 - `DELETE /api/devices/:id` — Remove device
 
 ### WebSocket
-- `ws://localhost:3000/ws` — Real-time clipboard sync
+- `ws://localhost:3737/ws` — Real-time clipboard sync
 
 ## Environment Variables
 
 ```bash
-JWT_SECRET=<your-random-secret-here>
-PORT=3000
-DATABASE_URL=postgresql://...
-REDIS_URL=redis://...
+# Server
+PORT=3737
+HOST=0.0.0.0
+NODE_ENV=development
+
+# Auth
+JWT_SECRET=your-random-secret-here
+JWT_EXPIRES_IN=7d
+
+# Database (individual fields or a single URL)
+DATABASE_URL=postgresql://user:pass@localhost:5432/copycloud
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=copycloud
+DB_PASSWORD=copycloud
+DB_NAME=copycloud
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# Rate limiting
+RATE_LIMIT_MAX=100
+RATE_LIMIT_WINDOW=60000
+
+# WebSocket
+WS_MAX_PAYLOAD=1048576
+WS_HEARTBEAT_INTERVAL=30000
+
+# File storage
+STORAGE_PATH=./storage
+MAX_FILE_SIZE=10485760
+OTP_EXPIRY=120000
 ```
 
 ## FAQ
@@ -145,7 +173,7 @@ A: CopyCloud auto-categorizes content into text, images, code snippets, and URLs
 **Server won't start**
 - Ensure PostgreSQL and Redis are running and accessible.
 - Verify your `DATABASE_URL` and `REDIS_URL` match your local setup.
-- Check that port 3000 (or your configured `PORT`) is not already in use.
+- Check that port 3737 (or your configured `PORT`) is not already in use.
 
 **Clipboard not syncing**
 - Confirm both devices are registered and online (`GET /api/devices`).
